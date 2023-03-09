@@ -8,24 +8,24 @@
  * Node dependencies.
  */
 
-const console = require('node:console');
-const process = require('node:process');
+const console = require("node:console");
+const process = require("node:process");
 
 /**
  * Module dependencies.
  */
 
-const debug = require('debug')('bulk-buy-be:server');
+const debug = require("debug")("bulk-buy-be:server");
 
-const express = require('express');
-const logger = require('morgan');
+const express = require("express");
+const logger = require("morgan");
 
 /**
  * Internal dependencies.
  */
 
-const config = require('./config');
-const router = require('./router');
+const config = require("./config");
+const router = require("./router");
 
 // ===============
 // EXPRESS CONFIG
@@ -33,7 +33,7 @@ const router = require('./router');
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
@@ -45,14 +45,14 @@ app.use(router);
 
 /**
  * Normalize a port into a number, string, or false.
- * 
+ *
  * @param {string} val
  */
 
 const normalizePort = (val) => {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
-  if (isNaN(port)) {
+  if (Number.isNaN(port)) {
     // named pipe
     return val;
   }
@@ -69,8 +69,8 @@ const normalizePort = (val) => {
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(config.port);
-app.set('port', port);
+const port = normalizePort(config.port);
+app.set("port", port);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -80,27 +80,25 @@ const server = app.listen(port);
 
 /**
  * Event listener for HTTP server "error" event.
- * 
+ *
  * @param {Object} error
  */
 
-server.on('error', (error) => {
-  if (error.syscall !== 'listen') {
+server.on("error", (error) => {
+  if (error.syscall !== "listen") {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === "string" ? `Pipe ${port}` : `Port ${port}`;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+    case "EACCES":
+      console.error(`${bind} requires elevated privileges`);
       process.exit(1);
       break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+    case "EADDRINUSE":
+      console.error(`${bind} is already in use`);
       process.exit(1);
       break;
     default:
@@ -112,20 +110,18 @@ server.on('error', (error) => {
  * Event listener for HTTP server "listening" event.
  */
 
-server.on('listening', () => {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+server.on("listening", () => {
+  const addr = server.address();
+  const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
+  debug(`Listening on ${bind}`);
 });
 
 /**
  * Event listener for HTTP server "close" event.
  */
 
-server.on('close', () => {
-  debug('Server closed');
+server.on("close", () => {
+  debug("Server closed");
 });
 
 // ===============
