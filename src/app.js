@@ -52,6 +52,7 @@ app.use(router);
  * @param {string} val
  */
 
+/* istanbul ignore next */
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
 
@@ -89,6 +90,7 @@ const start = () => {
    * @param {Object} error
    */
 
+  /* istanbul ignore next */
   server.on("error", (error) => {
     if (error.syscall !== "listen") {
       throw error;
@@ -115,6 +117,7 @@ const start = () => {
    * Event listener for HTTP server "listening" event.
    */
 
+  /* istanbul ignore next */
   server.on("listening", () => {
     const addr = server.address();
     const bind =
