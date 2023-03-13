@@ -50,7 +50,6 @@ app.use(router);
 
 /**
  * Normalize a port into a number, string, or false.
- *
  * @param {string} val
  */
 
@@ -88,8 +87,7 @@ const start = () => {
 
   /**
    * Event listener for HTTP server "error" event.
-   *
-   * @param {Object} error
+   * @param {Error} error
    */
 
   /* istanbul ignore next */
@@ -128,14 +126,32 @@ const start = () => {
   });
 
   /**
-   * Event listener for HTTP server "close" event.
+   * Event listener for custom "closed" event.
+   * @param {Error} err
    */
 
-  server.on("close", () => {
-    debug("Server closed");
+  server.on("closed", (err) => {
+    if (!err) debug("HTTP server closed");
   });
 };
 start();
+
+// ===============
+// GRACEFUL SHUTDOWN
+// ===============
+
+process.on("SIGTERM", () => {
+  debug(
+    `SIGTERM signal received: ${
+      server.listening ? "closing HTTP server" : "HTTP server already closed"
+    }`
+  );
+
+  server.close((err) => {
+    // custom "closed" event as "close" event does not contain params
+    server.emit("closed", err);
+  });
+});
 
 // ===============
 // EXPORTS
