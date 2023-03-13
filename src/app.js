@@ -19,6 +19,7 @@ const debug = require("debug")("bulk-buy-be:server");
 
 const express = require("express");
 const logger = require("morgan");
+const compression = require("compression");
 
 /**
  * Internal dependencies.
@@ -38,6 +39,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(compression());
 
 app.get("/favicon.ico", (req, res) => res.sendStatus(204));
 app.use(router);
