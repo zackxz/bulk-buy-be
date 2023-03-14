@@ -84,6 +84,7 @@ let server;
 const start = () => {
   if (server && server.listening) return;
   server = app.listen(port);
+  server.start = start;
 
   /**
    * Event listener for HTTP server "error" event.
@@ -157,5 +158,8 @@ process.on("SIGTERM", () => {
 // EXPORTS
 // ===============
 
-module.exports = server;
-module.exports.start = start;
+module.exports = {
+  get server() {
+    return server;
+  },
+};

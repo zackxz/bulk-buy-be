@@ -27,24 +27,24 @@ const app = require("../src/app");
 // ===============
 
 describe("express", () => {
-  app.start();
+  app.server.start();
 
   describe("routing", () => {
     describe("favicon", () => {
       it("should return 204", (done) => {
-        request(app).get("/favicon.ico").expect(204, done);
+        request(app.server).get("/favicon.ico").expect(204, done);
       });
     });
 
     describe("path found", () => {
       it("should return 200", (done) => {
-        request(app).get("/").expect(200, done);
+        request(app.server).get("/").expect(200, done);
       });
     });
 
     describe("path not found", () => {
       it("should return 404", (done) => {
-        request(app).get("/random").expect(404, done);
+        request(app.server).get("/random").expect(404, done);
       });
     });
   });
@@ -54,11 +54,11 @@ describe("express", () => {
 
     describe("SIGTERM when server is running", () => {
       it("should stop listening", (done) => {
-        assert.equal(app.listening, true, "should be listening");
+        assert.equal(app.server.listening, true, "should be listening");
 
-        app.once("closed", (err) => {
+        app.server.once("closed", (err) => {
           assert.ifError(err, "callback should not have error param");
-          assert.equal(app.listening, false, "should not be listening");
+          assert.equal(app.server.listening, false, "should not be listening");
           done();
         });
 
@@ -68,11 +68,11 @@ describe("express", () => {
 
     describe("SIGTERM when server is not running", () => {
       it("should not throw error", (done) => {
-        assert.equal(app.listening, false, "should not be listening");
+        assert.equal(app.server.listening, false, "should not be listening");
 
-        app.once("closed", (err) => {
+        app.server.once("closed", (err) => {
           assert.ok(err, "callback should have error param");
-          assert.equal(app.listening, false, "should not be listening");
+          assert.equal(app.server.listening, false, "should not be listening");
           done();
         });
 
