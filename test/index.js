@@ -16,25 +16,36 @@ const assert = require("node:assert").strict;
 
 const request = require("supertest");
 
+/**
+ * Internal dependencies.
+ */
+
+const app = require("../src/app");
+
+// ===============
+// TESTS
+// ===============
+
 describe("express", () => {
-  const app = require("../src/app");
   app.start();
 
-  describe("favicon", () => {
-    it("should return 204", (done) => {
-      request(app).get("/favicon.ico").expect(204, done);
+  describe("routing", () => {
+    describe("favicon", () => {
+      it("should return 204", (done) => {
+        request(app).get("/favicon.ico").expect(204, done);
+      });
     });
-  });
 
-  describe("path found", () => {
-    it("should return 200", (done) => {
-      request(app).get("/").expect(200, done);
+    describe("path found", () => {
+      it("should return 200", (done) => {
+        request(app).get("/").expect(200, done);
+      });
     });
-  });
 
-  describe("path not found", () => {
-    it("should return 404", (done) => {
-      request(app).get("/random").expect(404, done);
+    describe("path not found", () => {
+      it("should return 404", (done) => {
+        request(app).get("/random").expect(404, done);
+      });
     });
   });
 
