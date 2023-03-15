@@ -81,8 +81,17 @@ const port = normalizePort(config.port);
  */
 
 let server;
-const start = () => {
-  if (server && server.listening) return;
+const start = (cb) => {
+  if (server && server.listening) {
+    // will throw error because server is already listening
+    try {
+      server.listen();
+    } catch (err) {
+      /* istanbul ignore else: there is no else path */
+      if (typeof cb === "function") cb(err);
+      return;
+    }
+  }
   server = app.listen(port);
   server.start = start;
 
@@ -117,6 +126,10 @@ const start = () => {
   /**
    * Event listener for HTTP server "listening" event.
    */
+
+  server.once("listening", () => {
+    if (typeof cb === "function") cb();
+  });
 
   /* istanbul ignore next */
   server.on("listening", () => {
