@@ -9,6 +9,7 @@
  */
 
 const assert = require("node:assert").strict;
+const process = require("node:process");
 
 /**
  * Module dependencies.
@@ -82,8 +83,6 @@ describe("express", () => {
   });
 
   describe("graceful shutdown", () => {
-    const process = require("node:process");
-
     describe("SIGTERM when server is running", () => {
       it("should stop listening", (done) => {
         assert.equal(app.server.listening, true, "should be listening");
@@ -111,5 +110,13 @@ describe("express", () => {
         process.emit("SIGTERM");
       });
     });
+  });
+
+  after((done) => {
+    app.server.once("closed", () => {
+      done();
+    });
+
+    process.emit("SIGTERM");
   });
 });
