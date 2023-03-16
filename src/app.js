@@ -33,11 +33,7 @@ const router = require("./router");
 // ===============
 
 const app = express();
-app.use(
-  logger("dev", {
-    skip: () => config.env === "test",
-  })
-);
+if (config.env === "dev") app.use(logger("dev"));
 app.use(express.json());
 app.use(compression());
 
