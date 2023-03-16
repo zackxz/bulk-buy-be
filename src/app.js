@@ -15,10 +15,8 @@ const process = require("node:process");
  * Module dependencies.
  */
 
-const debug = require("debug")("bulk-buy-be:server");
-
 const express = require("express");
-const logger = require("morgan");
+const consoleLogger = require("morgan");
 const compression = require("compression");
 
 /**
@@ -26,14 +24,33 @@ const compression = require("compression");
  */
 
 const config = require("./config");
+const fileLogger = require("./services/fileLogger");
 const router = require("./router");
+
+// ===============
+// CONSTANTS
+// ===============
+
+const logger = fileLogger.getLogger("express");
+const app = express();
 
 // ===============
 // EXPRESS CONFIG
 // ===============
 
-const app = express();
-if (config.env === "dev") app.use(logger("dev"));
+if (config.env === "dev") app.use(consoleLogger("dev"));
+if (config.env !== "test") {
+  app.use(
+    fileLogger.framework.connectLogger(fileLogger.getLogger("access"), {
+      level: "auto",
+      statusRules: [
+        { from: 100, to: 399, level: "debug" },
+        { from: 400, to: 499, level: "warn" },
+        { from: 500, to: 599, level: "error" },
+      ],
+    })
+  );
+}
 app.use(express.json());
 app.use(compression());
 
@@ -88,7 +105,9 @@ const start = (cb) => {
       return;
     }
   }
-  server = app.listen(port);
+  server = app.listen(port, () => {
+    fileLogger.configure();
+  });
   server.start = start;
 
   /**
@@ -132,7 +151,7 @@ const start = (cb) => {
     const addr = server.address();
     const bind =
       typeof addr === "string" ? `Pipe ${addr}` : `Port ${addr.port}`;
-    debug(`Listening on ${bind}`);
+    logger.info(`Listening on ${bind}`);
   });
 
   /**
@@ -141,7 +160,10 @@ const start = (cb) => {
    */
 
   server.on("closed", (err) => {
-    if (!err) debug("HTTP server closed");
+    if (!err) {
+      logger.info("HTTP server closed");
+      fileLogger.shutdown(() => {});
+    }
   });
 };
 start();
@@ -151,7 +173,7 @@ start();
 // ===============
 
 process.on("SIGTERM", () => {
-  debug(
+  logger.debug(
     `SIGTERM signal received: ${
       server.listening ? "closing HTTP server" : "HTTP server already closed"
     }`
