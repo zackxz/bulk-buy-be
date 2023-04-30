@@ -37,3 +37,12 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Restart EKS deployments and pods
+      id: eks-control
+      uses: nikosch86/github-action-eks-kubectl@main
+      with:
+        command: "kubectl rollout restart deployment/eks-web-deployment -n webapp"
+      env:
+        EKS_CLUSTER: BulkBuy-EKSClusterWeb1
+    
